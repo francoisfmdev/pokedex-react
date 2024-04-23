@@ -4,9 +4,9 @@ import pokemons from "../data_pokemons";
  function PokeList(props) {
     const pokemons = props.pokemons.pokemons;
     const [screen,setScreen] = React.useState(false);
-    const [pokemon,setPokemon] = React.useState(null);
+    const [selectedPokemon,setPokemon] = React.useState(null);
    
-    const selectedPokemon = (pokemon) => {
+    const selectPokemon = (pokemon) => {
         setScreen(true);
         setPokemon(pokemon);
     }
@@ -28,7 +28,7 @@ import pokemons from "../data_pokemons";
                   ))}
                   </span>
                   <span style={{marginLeft: "50px"}}>
-                      <button onClick={(pokemon)=>selectedPokemon(pokemon)} class="btn btn-primary">voir</button>
+                      <button onClick={(pokemon)=>selectPokemon(pokemon)} class="btn btn-primary">voir</button>
                   </span>
                 </li>
               );
