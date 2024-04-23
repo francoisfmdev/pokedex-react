@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 
 function PokeList(props) {
     const pokemons = props.pokemons.pokemons;
-    const [screen, setScreen] = React.useState(false);
-    const [selectedPokemon, setPokemon] = React.useState(null);
+    const [screen, setScreen] = useState(false);
+    const [selectedPokemon, setPokemon] = useState(null);
+    const [searchTerm, setSearchTerm] = useState('');
 
     const selectPokemon = (pokemon) => {
         setScreen(true);
@@ -11,13 +12,17 @@ function PokeList(props) {
     };
 
     function calculatePercentage(value) {
-        return ((value - 1) / (255 - 1)) * 100;
+        return ((value - 1) / 254) * 100;
     }
+
+    const filteredPokemons = searchTerm.length === 0 ? pokemons : pokemons.filter(pokemon =>
+        pokemon.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
     const renderPokeList = () => {
         return (
             <ul>
-                {pokemons.map(pokemon => (
+                {filteredPokemons.map(pokemon => (
                     <li className="list-group-item" key={pokemon.id}>
                         {pokemon.name}
                         <span style={{ marginLeft: "50px" }}>
@@ -38,11 +43,20 @@ function PokeList(props) {
 
     return (
         <div className="container">
-            <div className="row"> 
-                <h1 class="text-center">Pokédex</h1>
+            <div className="row">
+                <h1 className="text-center">Pokédex</h1>
             </div>
             {!screen ? (
                 <div id="list" className="row">
+                    <form className="col-12">
+                        <input
+                            type="text"
+                            className="form-control"
+                            placeholder="Rechercher un pokémon"
+                            value={searchTerm}
+                            onChange={e => setSearchTerm(e.target.value)}
+                        />
+                    </form>
                     <ul className="list-group col-12">
                         {renderPokeList()}
                     </ul>
@@ -63,35 +77,14 @@ function PokeList(props) {
                                         <strong>{selectedPokemon?.stats.HP}</strong>
                                     </div>
                                 </div>
-                                <div>ATK : 
-                                <div className="progress" role="progressbar" aria-label="Default striped example" aria-valuenow={selectedPokemon.stats.attack.toString()} aria-valuemin="0" aria-valuemax="255">
-                                        <div className="progress-bar progress-bar-striped bg-success" style={{ width: `${calculatePercentage(selectedPokemon?.stats.attack ?? 0)}%` }} aria-valuenow={selectedPokemon.stats.hp} aria-valuemin="0" aria-valuemax="255"></div>
-                                        <strong>{selectedPokemon?.stats.attack}</strong>
+                                {Object.entries(selectedPokemon.stats).map(([key, value]) => (
+                                    key !== "HP" && <div key={key}>{key.toUpperCase()} : 
+                                        <div className="progress" role="progressbar" aria-label="Default striped example" aria-valuenow={value.toString()} aria-valuemin="0" aria-valuemax="255">
+                                            <div className="progress-bar progress-bar-striped bg-success" style={{ width: `${calculatePercentage(value ?? 0)}%` }} aria-valuenow={value} aria-valuemin="0" aria-valuemax="255"></div>
+                                            <strong>{value}</strong>
+                                        </div>
                                     </div>
-                                </div>
-                                <div>DEF : <div className="progress" role="progressbar" aria-label="Default striped example" aria-valuenow={selectedPokemon.stats.defense.toString()} aria-valuemin="0" aria-valuemax="255">
-                                        <div className="progress-bar progress-bar-striped bg-success" style={{ width: `${calculatePercentage(selectedPokemon?.stats.defense ?? 0)}%` }} aria-valuenow={selectedPokemon.stats.hp} aria-valuemin="0" aria-valuemax="255"></div>
-                                       <strong>{selectedPokemon?.stats.defense}</strong> 
-                                    </div>
-                                </div>
-                                <div>ATT-SPE : 
-                                <div className="progress" role="progressbar" aria-label="Default striped example" aria-valuenow={selectedPokemon.stats.special_attack.toString()} aria-valuemin="0" aria-valuemax="255">
-                                        <div className="progress-bar progress-bar-striped bg-success" style={{ width: `${calculatePercentage(selectedPokemon?.stats.special_attack ?? 0)}%` }} aria-valuenow={selectedPokemon.stats.hp} aria-valuemin="0" aria-valuemax="255"></div>
-                                       <strong>{selectedPokemon?.stats.special_attack}</strong> 
-                                    </div>
-                                </div>
-                                <div>DEF-SPE : 
-                                <div className="progress" role="progressbar" aria-label="Default striped example" aria-valuenow={selectedPokemon.stats.special_defense.toString()} aria-valuemin="0" aria-valuemax="255">
-                                        <div className="progress-bar progress-bar-striped bg-success" style={{ width: `${calculatePercentage(selectedPokemon?.stats.special_defense ?? 0)}%` }} aria-valuenow={selectedPokemon.stats.hp} aria-valuemin="0" aria-valuemax="255"></div>
-                                        <strong>{selectedPokemon?.stats.special_defense}</strong>
-                                    </div>
-                                </div>
-                                <div>SPD : 
-                                <div className="progress" role="progressbar" aria-label="Default striped example" aria-valuenow={selectedPokemon.stats.speed.toString()} aria-valuemin="0" aria-valuemax="255">
-                                        <div className="progress-bar progress-bar-striped bg-success" style={{ width: `${calculatePercentage(selectedPokemon?.stats.speed ?? 0)}%` }} aria-valuenow={selectedPokemon.stats.hp} aria-valuemin="0" aria-valuemax="255"></div>
-                                        <strong>{selectedPokemon?.stats.speed}</strong>
-                                    </div>
-                                </div>
+                                ))}
                             </div>
                         </div>
                     </div>
